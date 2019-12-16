@@ -19,5 +19,5 @@ fn main() {
     day05::solve("./data/day05.txt");
     day05::solve_pt2("./data/day05.txt");
     day06::solve("./data/day06.txt");
-    day06::solve_pt2("./data/day06d.txt");
+    day06::solve_pt2("./data/day06.txt");
 }

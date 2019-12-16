@@ -63,51 +63,45 @@ pub fn solve_pt2(input_file: &str) {
 
     let mut transfer_count = 0u32;
     let santa = String::from("SAN");
-    let me = String::from("YOU");
-    let mut to_visit : VecDeque<&String> = VecDeque::new();
-    to_visit.push_front(&me);
-    let mut visited = VecDeque::new();
+    let mut to_visit : VecDeque<String> = VecDeque::new();
+    let parent = orbit_treemap.get("YOU").expect("UNKNOWN ME").orbits.as_ref().expect("Parent missing!");
+    to_visit.push_front(parent.clone());
     let mut distances : BTreeMap<String, u32> = BTreeMap::new();
+    distances.insert(parent.clone(), 0);
     while to_visit.len() > 0 {
         let object_id = to_visit.pop_front().unwrap();
-        visited.push_back(object_id);
-        println!("visiting {} at distance {:?}", object_id, distances.get(object_id));
+
+        // check if santa is on current object orbit
+        let object = orbit_treemap.get(&object_id).expect("UNKNOWN OBJECT");
+        let object_distance = *distances.get(&object_id).expect("Unknown distance!");
+        if object.on_orbit.iter().find(|&x| x == &santa).is_some() {
+            transfer_count = object_distance;
+            break;
+        }
+
         if object_id == "COM" {
             continue;
         }
 
-        let parent_id = orbit_treemap.get(object_id).expect("UNKNOWN ME").orbits.as_ref().expect("MUST HAVE 'PARENT'");
-        let parent = orbit_treemap.get(parent_id).unwrap();
-        if parent.on_orbit.iter().find(|&x| x == &santa).is_some() {
-            println!("ob {}, parent {}, orbit {:?}", object_id, parent_id, parent.on_orbit);
-            transfer_count = *distances.get(parent_id).expect("NOT COMPUTED DISTANCE");
-            break;
-        } else {
-            if object_id == &me {
-                distances.insert(parent_id.clone(), 0);
-                for o in &parent.on_orbit {
-                    distances.insert(o.clone(), 0);
-                }
-            } else {
-                let dist = distances.get(object_id).expect("!!!") + 1;
-                distances.insert(parent_id.clone(), dist);
-                for o in &parent.on_orbit {
-                    distances.insert(o.clone(), dist);
-                }
-            }
-            
-            for o in &parent.on_orbit {
-                if visited.iter().find(|&x| x == &o).is_none() {
-                to_visit.push_front(o);
-            }
-            if visited.iter().find(|&x| x == &parent_id).is_none() {
-                to_visit.push_front(parent_id);
-            }
-            }
+        //add parent to search list
+        let parent_id = object.orbits.as_ref().expect("Missing parent");
+        process_path_node(parent_id, object_distance+1, &mut distances, &mut to_visit);
+
+        //and all of children!
+        for child in &object.on_orbit {
+            process_path_node(child, object_distance+1, &mut distances, &mut to_visit);
         }
     }
 
     println!("Day 06.2: Required transfer count: {}", transfer_count);
+}
+
+fn process_path_node(node_id: &String, distance: u32, distances: &mut BTreeMap<String, u32>, to_visit: &mut VecDeque<String>) {
+    let child_dist = distances.get(node_id);
+    if child_dist.is_none() || child_dist.unwrap() > &distance {
+        *distances.entry(node_id.clone()).or_insert(0) = distance;
+        to_visit.push_back(node_id.clone());
+    }
 }
 
 fn make_orbit_treemap(input_file: &str) -> BTreeMap<String, SpaceObject> {
