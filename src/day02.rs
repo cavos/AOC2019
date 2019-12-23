@@ -3,7 +3,7 @@ use std::io::{BufRead, BufReader};
 
 use super::interpreter::IntcodeInterpreter;
 
-pub fn solve(input_file : &str) {
+pub fn solve(input_file: &str) {
     let mut intcode = read_input(input_file);
     intcode[1] = 12;
     intcode[2] = 2;
@@ -39,15 +39,23 @@ pub fn solve_pt2(input_file: &str, expected_val: i32) {
 
     assert!(noun == 59);
     assert!(verb == 36);
-    println!("Day 02.2: noun {:}, verb {:}, answer {:}", noun, verb, 100*noun+verb);
+    println!(
+        "Day 02.2: noun {:}, verb {:}, answer {:}",
+        noun,
+        verb,
+        100 * noun + verb
+    );
 }
 
-fn read_input(input_file : &str) -> Vec<i128> {
+fn read_input(input_file: &str) -> Vec<i128> {
     let mut buffered = BufReader::new(File::open(input_file).unwrap());
     let mut input_data = String::new();
     let r = buffered.read_line(&mut input_data);
     if r.is_err() {
         panic!("Failed to read input data!")
     }
-    input_data.split(',').map(|c| c.parse::<i128>().unwrap()).collect()
+    input_data
+        .split(',')
+        .map(|c| c.parse::<i128>().unwrap())
+        .collect()
 }

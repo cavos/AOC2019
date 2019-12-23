@@ -1,17 +1,17 @@
+use std::cmp::Ordering;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
-use std::cmp::Ordering;
 
 #[derive(PartialEq, Debug)]
 struct Coord {
-    dir : char,
-    offset : u16
+    dir: char,
+    offset: u16,
 }
 
 #[derive(Eq, Debug, Clone)]
 struct Point {
-    x : i32,
-    y : i32
+    x: i32,
+    y: i32,
 }
 
 impl Ord for Point {
@@ -43,19 +43,19 @@ impl Point {
     }
 
     pub fn new(x: i32, y: i32) -> Self {
-        Point{x, y}
+        Point { x, y }
     }
 }
 
-pub fn solve(puzzle_input : &str) {
+pub fn solve(puzzle_input: &str) {
     let (path_a, path_b) = read_input(puzzle_input);
 
     let wire_a = create_wire(path_a);
-    let wire_b = create_wire(path_b);   
+    let wire_b = create_wire(path_b);
 
     let mut distance = u32::max_value();
     let mut step_count = u32::max_value();
-    let central_point = Point{x: 0, y: 0};
+    let central_point = Point { x: 0, y: 0 };
     for line_a in wire_a.windows(2) {
         for line_b in wire_b.windows(2) {
             let intersection = get_intersection_point(&line_a, &line_b);
@@ -72,14 +72,17 @@ pub fn solve(puzzle_input : &str) {
                     step_count = required_steps;
                 }
             }
-        }        
+        }
     }
-  
+
     println!("Day 03.1: distance to closest intersection is {}", distance);
-    println!("Day 03.2: {} steps required to reach intersection", step_count);
+    println!(
+        "Day 03.2: {} steps required to reach intersection",
+        step_count
+    );
 }
 
-fn get_path_length_to(wire :&[Point], point: &Point) -> u32 {
+fn get_path_length_to(wire: &[Point], point: &Point) -> u32 {
     let mut step_count = 0u32;
     for line in wire.windows(2) {
         if is_point_on_line(&point, line) {
@@ -99,13 +102,21 @@ fn get_intersection_point(line_a: &[Point], line_b: &[Point]) -> Option<Point> {
     if horizontal_a != horizontal_b {
         let point: Point;
         if horizontal_b {
-            point = Point{x: line_a[0].x, y: line_b[0].y};
+            point = Point {
+                x: line_a[0].x,
+                y: line_b[0].y,
+            };
         } else {
-            point = Point{x: line_b[0].x, y: line_a[0].y};
+            point = Point {
+                x: line_b[0].x,
+                y: line_a[0].y,
+            };
         }
-        if point != Point::new(0, 0) 
-            && is_point_on_line(&point, line_a) && is_point_on_line(&point, line_b) {
-            return Some(point)
+        if point != Point::new(0, 0)
+            && is_point_on_line(&point, line_a)
+            && is_point_on_line(&point, line_b)
+        {
+            return Some(point);
         }
     }
     None
@@ -136,7 +147,7 @@ fn is_point_on_line(point: &Point, line: &[Point]) -> bool {
 }
 
 fn create_wire(path: Vec<Coord>) -> Vec<Point> {
-    let mut cur_pos = Point{ x: 0, y: 0};
+    let mut cur_pos = Point { x: 0, y: 0 };
     let mut wire = vec![cur_pos.clone()];
 
     for coord in path {
@@ -153,11 +164,11 @@ fn update_pos(coord: &Coord, point: &mut Point) {
         'R' => point.x += coord.offset as i32,
         'U' => point.y += coord.offset as i32,
         'D' => point.y -= coord.offset as i32,
-        _ => panic!("Unknown direcion!")
+        _ => panic!("Unknown direcion!"),
     }
 }
 
-fn read_input(input_file : &str) -> (Vec<Coord>, Vec<Coord>) {
+fn read_input(input_file: &str) -> (Vec<Coord>, Vec<Coord>) {
     let buffered = BufReader::new(File::open(input_file).unwrap());
     let mut lines = buffered.lines();
     let path_a = parse_path(&lines.next().unwrap().unwrap());
@@ -166,11 +177,14 @@ fn read_input(input_file : &str) -> (Vec<Coord>, Vec<Coord>) {
     (path_a, path_b)
 }
 
-fn parse_path(line : &String) -> Vec<Coord> {
+fn parse_path(line: &String) -> Vec<Coord> {
     let mut path = Vec::new();
     for coord in line.split(',') {
         let (row, pos) = coord.split_at(1);
-        path.push(Coord { dir: row.chars().nth(0).unwrap(), offset: pos.parse::<u16>().unwrap()})
+        path.push(Coord {
+            dir: row.chars().nth(0).unwrap(),
+            offset: pos.parse::<u16>().unwrap(),
+        })
     }
 
     path

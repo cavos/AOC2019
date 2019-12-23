@@ -6,17 +6,19 @@ pub fn solve(input_data: &str) {
     let result = buffered
         .lines()
         .map(|l| l.unwrap())
-        .fold(0i32, |fuel_sum, mass| fuel_sum + (mass.parse::<i32>().unwrap()/3) - 2);
+        .fold(0i32, |fuel_sum, mass| {
+            fuel_sum + (mass.parse::<i32>().unwrap() / 3) - 2
+        });
     println!("Day 01.1: Sum of fuel requirements is {:} units.", result);
 }
 
 struct FuelRequirement {
-    mass : i32,
+    mass: i32,
 }
 
 impl FuelRequirement {
-    fn new(mass : i32) -> FuelRequirement {
-        FuelRequirement {mass : mass}
+    fn new(mass: i32) -> FuelRequirement {
+        FuelRequirement { mass: mass }
     }
 }
 
@@ -40,9 +42,12 @@ pub fn solve_pt2(input_data: &str) {
         .lines()
         .map(|l| l.unwrap().parse::<i32>().unwrap())
         .fold(0i32, |fuel_sum, mass| {
-            let fuel_req : i32 = FuelRequirement::new(mass).sum();
+            let fuel_req: i32 = FuelRequirement::new(mass).sum();
             fuel_sum + fuel_req
-            });
+        });
 
-    println!("Day 01.2: Sum of fuel requirements is {:} units.", total_fuel_required);
+    println!(
+        "Day 01.2: Sum of fuel requirements is {:} units.",
+        total_fuel_required
+    );
 }
