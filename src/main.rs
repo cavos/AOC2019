@@ -5,6 +5,7 @@ mod day04;
 mod day05;
 mod day06;
 mod day07;
+mod day08;
 
 mod interpreter;
 
@@ -20,7 +21,8 @@ fn main() {
     day05::solve_pt2("./data/day05.txt");
     day06::solve("./data/day06.txt");
     day06::solve_pt2("./data/day06.txt");
-    // day07::solve("./data/day07.txt");
+    day07::solve("./data/day07.txt");
     day07::solve_pt2("./data/day07.txt");
+    day08::solve("./data/day08.txt");
+    day08::solve_pt2("./data/day08.txt", true);
 }
-
